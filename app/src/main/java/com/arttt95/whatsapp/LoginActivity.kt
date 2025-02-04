@@ -37,7 +37,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         inicializarEventosClique()
-        firebaseAuth.signOut()
+//        firebaseAuth.signOut()
 
     }
 
@@ -96,6 +96,9 @@ class LoginActivity : AppCompatActivity() {
 
         email = binding.editLoginEmail.text.toString()
         password = binding.editLoginPassword.text.toString()
+
+//        email = "papai-cris@teste.com"
+//        password = "Skalovsk07/01"
 
         if(email.isNotEmpty()) {
             binding.textInputLayoutLoginPassword.error = null
