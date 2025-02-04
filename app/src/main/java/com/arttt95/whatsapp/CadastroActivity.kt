@@ -107,7 +107,7 @@ class CadastroActivity : AppCompatActivity() {
             }.addOnFailureListener { erro ->
                 try {
                     throw erro
-                } catch (erroUsuarioExistente: FirebaseAuthUserCollisionException) {
+                } catch ( erroUsuarioExistente: FirebaseAuthUserCollisionException) {
                     erroUsuarioExistente.printStackTrace()
                     exibirMensagem("E-mail já cadastrado")
                 } catch (erroWeakPassword: FirebaseAuthWeakPasswordException) {
