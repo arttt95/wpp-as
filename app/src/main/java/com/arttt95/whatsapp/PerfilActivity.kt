@@ -2,6 +2,7 @@ package com.arttt95.whatsapp
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,11 +11,22 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.arttt95.whatsapp.databinding.ActivityPerfilBinding
+import com.arttt95.whatsapp.utils.exibirMensagem
 
 class PerfilActivity : AppCompatActivity() {
 
     private val binding by lazy {
         ActivityPerfilBinding.inflate(layoutInflater)
+    }
+
+    private val gerenciadorGaleria = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        if(uri != null) {
+            binding.imgPerfil.setImageURI( uri )
+        } else {
+            exibirMensagem("Nenhuma imagem selecionada")
+        }
     }
 
     private var hasPermitionCamera = false
@@ -32,6 +44,22 @@ class PerfilActivity : AppCompatActivity() {
 
         inicializarToolbar()
         solicitarPermissoes()
+        inicializarEventosClique()
+
+    }
+
+    private fun inicializarEventosClique() {
+
+        binding.fabSelecionar.setOnClickListener {
+
+            if( haspermitionGaleria ) {
+                gerenciadorGaleria.launch("image/*")
+            } else {
+                exibirMensagem("Sem permissão de Galeria")
+                solicitarPermissoes()
+            }
+
+        }
 
     }
 
@@ -43,10 +71,17 @@ class PerfilActivity : AppCompatActivity() {
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
 
-        haspermitionGaleria = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.READ_MEDIA_IMAGES
-        ) == PackageManager.PERMISSION_GRANTED
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            haspermitionGaleria = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_MEDIA_IMAGES
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            haspermitionGaleria = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        }
 
         // LISTA DE PERMISSÕES NEGADAS
         val listaPermissoesNegadas = mutableListOf<String>()
@@ -56,7 +91,11 @@ class PerfilActivity : AppCompatActivity() {
         }
 
         if(!haspermitionGaleria) {
-            listaPermissoesNegadas.add(Manifest.permission.READ_MEDIA_IMAGES)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                listaPermissoesNegadas.add(Manifest.permission.READ_MEDIA_IMAGES)
+            } else {
+                listaPermissoesNegadas.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
         }
 
         if(listaPermissoesNegadas.isNotEmpty()) {
@@ -69,8 +108,13 @@ class PerfilActivity : AppCompatActivity() {
                 hasPermitionCamera = permissoes[Manifest.permission.CAMERA]
                     ?: hasPermitionCamera
 
-                haspermitionGaleria= permissoes[Manifest.permission.READ_MEDIA_IMAGES]
-                    ?: haspermitionGaleria
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    haspermitionGaleria= permissoes[Manifest.permission.READ_MEDIA_IMAGES]
+                        ?: haspermitionGaleria
+                } else {
+                    haspermitionGaleria= permissoes[Manifest.permission.READ_EXTERNAL_STORAGE]
+                        ?: haspermitionGaleria
+                }
 
             }
 
