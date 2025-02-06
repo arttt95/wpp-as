@@ -11,8 +11,13 @@
 
     </style>
 
-    <style name="ActionOverflowButton" parent="Widget.AppCompat.ActionButton.Overflow">
+    <style name="ActionOverflowButton"
+        parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="tint">@color/white</item>
+    </style>
+    
+    <style name="Circulo">
+        <item name="cornerSize">50%</item>
     </style>
 
     <style name="Theme.WhatsApp" parent="Base.Theme.WhatsApp" />
